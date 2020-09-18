@@ -4,24 +4,21 @@ Download the X11 compose-sequences for en_US.UTF-8¹ and get rid of some things:
 - Comments (XCOMM)
 - Sequences not started my Multi_key
 - Sequences containing non-standard characters
+- Sequences containing other dead keys
 
 ¹) en_US.UTF-8 seems to be quite complete and also available on other locales.
 
-```
 $ wget https://cgit.freedesktop.org/xorg/lib/libX11/plain/nls/en_US.UTF-8/Compose.pre
-$ grep -i '^<multi' Compose.pre | grep -v '<U....>' | grep -v 'U.....>'  > Compose.usable
-```
+$ grep -i '^<multi' Compose.pre | grep -v '<dead' | grep -v '<U....>' | grep -v '<U.....>' > Compose.usable
 
 
 Convert to psv
 --------------
-Plus-separated-values because + is not used in the file.
-Regex to extract the fields then remove tabs and squish spaces.
-TODO: There must be a better regex for this. Also, this leaves begin-of-field spaces.
+- Plus-separated-values because + is not used in the file.
+- Remove tabs and squish spaces.
+- Regex to extract the fields into psv.
 
-```
-$ sed --regexp-extended 's/(.*): \"(.*)\"(.*)#(.*)/\1+\2+\3+\4/' Compose.usable | tr -d "\t" | tr -s " " > Compose.psv
-```
+$ cat Compose.usable | tr -d "\t" | tr -s " " | sed --regexp-extended 's/(\S*)\s*: \"(.*)\"\s*(\S*)\s*#\s*(.*)/\1+\2+\3+\4/' > Compose.psv
 
 Load into SQLite
 ----------------
@@ -40,13 +37,13 @@ $ sqlite3 Compose.db3
 
 How to get random, unique entries that do not repeat
 ----------------------------------------------------
-Create a table for ids we already sent.
+Create a table for characters we already sent.
 	CREATE TABLE "alreadySent" (
 		"keySequenceROWID" INTEGER,
 		"timestamp"        INTEGER
 	);
 
-Create a view with yet unsent rows
+Create a view with yet unsent characters
 	CREATE VIEW stillAvailable (
 		keySequenceROWID,
 		keySequence,
@@ -59,7 +56,7 @@ Create a view with yet unsent rows
 		WHERE ROWID NOT IN (
 			SELECT keySequenceROWID
 			FROM alreadySent
-		)
+		);
 
 Add some phrases to start the toot with
 ---------------------------------------
