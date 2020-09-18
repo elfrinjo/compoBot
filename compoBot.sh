@@ -74,7 +74,7 @@ while true ; do
 	sqlite3 "$database" "INSERT INTO alreadySent VALUES($_keySequenceROWID, datetime('now'));"
 
 	## Sleep until the next time
-	waitTime=$(shuf --input-range=$minWait-$maxWait --head-count=1)
+	waitTime=$(shuf -i $minWait-$maxWait -n 1)
 	echo "Waiting for $waitTime seconds"
 	echo ""
 	sleep $waitTime
