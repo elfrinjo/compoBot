@@ -1,6 +1,7 @@
 FROM alpine:latest
 
 LABEL maintainer "J. Elfring <code@elfring.ms>"
+LABEL org.opencontainers.image.source https://github.com/elfrinjo/compoBot
 
 RUN apk --no-cache --update \
         add bash \
