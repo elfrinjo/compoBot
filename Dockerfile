@@ -18,7 +18,7 @@ ENV database="/data/working-db.db3" \
     maxWait=86400 \
     mtdApi="https://mastodon.example/api/v1/statuses" \
     mtdVisibility="direct" \
-    mtdToken="THIS_SHOULD_BE_A_Bearer-Token" \
+    mtdToken="THIS_SHOULD_BE_A_Bearer-Token"
 
 VOLUME /data
 WORKDIR /app
