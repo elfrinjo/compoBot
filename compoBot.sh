@@ -8,19 +8,20 @@
 
 
 ## Databasefile
-database=${database:="./working-db.db3"}
+database=${database:="./compobot.db3"}
 
 ## Wait-time between toots in seconds
-minWait=${minWait:=5}
-maxWait=${maxWait:=10}
+minWait=${minWait:=43200}
+maxWait=${maxWait:=86400}
 
 ## Mastodon Settings&Credentials
 mtdVisibility=${mtdVisibility:="direct"}     # public, unlisted, private, direct.
 mtdApi=${mtdApi:="https://mastodon.example/api/v1/statuses"}
-mtdToken=${mtdToken:="THIS_SHOULD_BE_A_Bearer-Token"}
+mtdToken=${mtdToken:="INSERT-YOUR-BEARER-TOKEN"}
 
 #####################################################################
 
+## Source config fro env if there is a file called env.
 test -f ./env && source ./env
 
 echo "=============> App-Start at $(date +%Y-%m-%dT%H%M%S)"
@@ -28,20 +29,20 @@ echo "=============> App-Start at $(date +%Y-%m-%dT%H%M%S)"
 ## Blow up on errors
 set -e
 
-## Get a fresh copy of the sequence-db if it doesn't exist.
-test -f $database || cp sequences/Compose.db3 $database
-
 while true ; do
+	echo "-------------> Toot-Start at $(date +%Y-%m-%dT%H%M%S)"
 
-	echo "-------------> Starting at $(date +%Y-%m-%dT%H%M%S)"
+	## Create Database if it does not exist
+	test -f $database || sh dbFactory.sh $database
 
 	## Number of rows still available,
-	## when no row is left, we will delete the sent-table and start over
+	## when no row is left, just recreate the database and startover.
 	rowsAvailable=$(sqlite3 "$database" "SELECT count(keySequenceROWID) FROM stillAvailable")
 	echo rowsAvailable: $rowsAvailable
 	if [ $rowsAvailable -eq 0 ] ; then
-		echo "Deleting the sent-table and starting ower."
-		sqlite3 "$database" "DELETE from alreadySent"
+		echo "Deleting the database and starting ower."
+		rm -f $database
+		sh dbFactory.sh $database
 	fi
 
 	## Pick a random row
@@ -75,7 +76,7 @@ while true ; do
 
 	## Sleep until the next time
 	waitTime=$(shuf -i $minWait-$maxWait -n 1)
-	echo "Waiting for $waitTime seconds"
+	echo "Waiting for $waitTime seconds.  " $(date -d "$waitTime seconds")
 	echo ""
 	sleep $waitTime
 

@@ -14,11 +14,11 @@ $ grep -i '^<multi' Compose.pre | grep -v '<dead' | grep -v '<U....>' | grep -v 
 
 Convert to psv
 --------------
-- Plus-separated-values because + is not used in the file.
-- Remove tabs and squish spaces.
+- Plus-separated-values because + is not used elsewhere in the file.
 - Regex to extract the fields into psv.
+- The second description is all-uppper, we'll convert it to all lower.
 
-$ cat Compose.usable | tr -d "\t" | tr -s " " | sed --regexp-extended 's/(\S*)\s*: \"(.*)\"\s*(\S*)\s*#\s*(.*)/\1+\2+\3+\4/' > Compose.psv
+$ sed --regexp-extended 's/(.*>)\s*:\s\"(.*)\"\s*(\S*)\s*#\s*(.*)/\1+\2+\3+\L\4/' Compose.usable > Compose.psv
 
 Load into SQLite
 ----------------

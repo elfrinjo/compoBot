@@ -4,22 +4,23 @@ LABEL maintainer "J. Elfring <code@elfring.ms>"
 LABEL org.opencontainers.image.source https://github.com/elfrinjo/compoBot
 
 RUN apk --no-cache --update \
-        add bash \
-            ca-certificates \
+        add ca-certificates \
+            coreutils \
+            bash \
             curl \
+            sed \
             sqlite \
-        && mkdir -p /app/sequences \
-        && mkdir /data
+    && mkdir /app \
+    && mkdir /data
 
-COPY sequences/Compose.db3 /app/sequences/Compose.db3
-COPY compoBot.sh /app/compoBot.sh
+COPY . /app/
 
-ENV database="/data/working-db.db3" \
+ENV database=/data/compobot.db3 \
     minWait=43200 \
     maxWait=86400 \
-    mtdApi="https://mastodon.example/api/v1/statuses" \
-    mtdVisibility="direct" \
-    mtdToken="THIS_SHOULD_BE_A_Bearer-Token"
+    mtdVisibility=direct \
+    mtdApi=https://mastodon.example/api/v1/statuses \
+    mtdToken=INSERT-YOUR-BEARER-TOKEN
 
 VOLUME /data
 WORKDIR /app
