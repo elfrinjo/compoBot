@@ -12,8 +12,11 @@ fi
 target=$1
 
 cat lib/Compose.pre \
-	| grep -i '^<multi' \
-	| grep -v '<dead' \
+	| grep '^<Multi_key>' \
+	| grep -v '<dead_' \
+	| grep -v '<Cyrillic_' \
+	| grep -v '<Greek_' \
+	| grep -v '<kana_' \
 	| grep -v '<U....>' \
 	| grep -v '<U.....>' \
 	| sed  --regexp-extended 's/(.*>)\s*:\s\"(.*)\"\s*(\S*)\s*#\s*(.*)/\1+\2+\3+\L\4/' \

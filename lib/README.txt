@@ -3,13 +3,12 @@ How to get the list of usable key-sequences?
 Download the X11 compose-sequences for en_US.UTF-8¹ and get rid of some things:
 - Comments (XCOMM)
 - Sequences not started my Multi_key
-- Sequences containing non-standard characters
+- Sequences containing non-standard characters (U.... and U.....)
+- Sequences containing non-international keys (cyrillic, greek, kana)
 - Sequences containing other dead keys
+This is done by grep in dbFactory.sh
 
 ¹) en_US.UTF-8 seems to be quite complete and also available on other locales.
-
-$ wget https://cgit.freedesktop.org/xorg/lib/libX11/plain/nls/en_US.UTF-8/Compose.pre
-$ grep -i '^<multi' Compose.pre | grep -v '<dead' | grep -v '<U....>' | grep -v '<U.....>' > Compose.usable
 
 
 Convert to psv
@@ -17,8 +16,7 @@ Convert to psv
 - Plus-separated-values because + is not used elsewhere in the file.
 - Regex to extract the fields into psv.
 - The second description is all-uppper, we'll convert it to all lower.
-
-$ sed --regexp-extended 's/(.*>)\s*:\s\"(.*)\"\s*(\S*)\s*#\s*(.*)/\1+\2+\3+\L\4/' Compose.usable > Compose.psv
+This is done by sed in dbFactory.sh
 
 Load into SQLite
 ----------------
