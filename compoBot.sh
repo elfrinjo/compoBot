@@ -62,7 +62,7 @@ while true ; do
 	echo "phrase:           $_phrase"
 
 	## Build and Send Toot
-	toot="$_phrase$_keySequencewill insert     $_utfCharacter($_desc2)"
+	toot="$_phrase$_keySequencewill insert     $_utfCharacter($_desc2)#composekey #keyboard #specialcharacters #keyboardlayout"
 	curl --form "status=$toot" \
 		 --form "visibility=$mtdVisibility" \
 		 --header "Authorization: Bearer $mtdToken" \
